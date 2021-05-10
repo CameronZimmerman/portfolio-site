@@ -1,0 +1,55 @@
+html, body {
+  width: 100vw;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  position: relative;
+  margin:0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.background {
+  margin:0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+img, .container {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.mountains {
+  background: url('./media/portfolio-mountains.png');
+  background-size: cover;
+}
+.ground {
+  background: url('./media/portfolio-ground.png');
+  background-size: cover;
+}
+
+.clouds1 {
+  background: url('./media/portfolio-clouds-1.png');
+  background-size: cover;
+}
+.clouds2 {
+  background: url('./media/portfolio-clouds-2.png');
+  background-size: cover;
+}
+.character {
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  background: url('./media/portfolio-character.png');
+  background-size: cover;
+  height: 30vh;
+  width: 30vh;
+}
