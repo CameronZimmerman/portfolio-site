@@ -34,6 +34,9 @@ function preload() {
   this.load.setBaseURL("");
 
   this.load.image("mountains", "./media/portfolio-mountains.png");
+  this.load.image("far-trees", "./media/portfolio-trees-3.png")
+  this.load.image("mid-trees", "./media/portfolio-trees-2.png")
+  this.load.image("close-trees", "./media/portfolio-trees-1.png")
   this.load.image("ground", "./media/portfolio-ground.png");
 
   for (let i = 1; i < 16; i++) {
@@ -68,13 +71,15 @@ function update() {
 function create() {
   
   createScrollingBg("mountains", 0.075);
+  createClouds(cloudCount);
+  createScrollingBg("far-trees", 0.2);
+  createScrollingBg("mid-trees", 0.4);
+  createScrollingBg("close-trees", 0.6);
   createScrollingBg("ground", 0.8);
 
   player = this.add.sprite(viewHeight/3, viewHeight - viewHeight/6, 'player-idle')
   player.displayWidth = (viewHeight/3);
   player.scaleY = player.scaleX;
-
-  createClouds(cloudCount);
 
   this.anims.create({
     key: 'walk',
