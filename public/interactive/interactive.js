@@ -1,33 +1,45 @@
-const width = window.innerWidth;
-const height = window.innerHeight;
+const viewWidth = window.innerWidth
+const viewHeight = window.innerHeight
+const sceneWidth = 10000;
+
+const cloudCount = 75;
+
 const config = {
   type: Phaser.CANVAS,
-  width,
-  height,
+  width: viewWidth,
+  height: viewHeight,
   zoom: 4,
   antialias: false,
   pixleArt: true,
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: 200 },
+      gravity: { y: 0 },
     },
   },
   scene: {
     preload: preload,
     create: create,
+    update: update
   },
 };
 
-const game = new Phaser.Game(config);
+const game = new Phaser.Game(config)
+console.log(game);
+
+let player;
+let cloudGroup;
 
 function preload() {
   this.load.setBaseURL("");
 
   this.load.image("mountains", "./media/portfolio-mountains.png");
-  this.load.image("clouds-1", "./media/portfolio-clouds-1.png");
-  this.load.image("clouds-2", "./media/portfolio-clouds-2.png");
   this.load.image("ground", "./media/portfolio-ground.png");
+
+  for (let i = 1; i < 16; i++) {
+    this.load.image(`cloud${i}`, `./media/clouds/portfolio-cloud-${i}.png`)
+  }
+
   this.load.spritesheet('player-walk', './media/portfolio-character-walk-spritesheet.png', {
     frameWidth: 32,
     frameHeight: 32
@@ -36,29 +48,33 @@ function preload() {
     frameWidth: 32,
     frameHeight: 32
   })
+
+  this.cursors = this.input.keyboard.createCursorKeys()
+}
+
+function update() {
+  const speed = 2.5
+  if((this.cursors.right.isDown && this.cursors.left.isDown) || (!this.cursors.right.isDown && !this.cursors.left.isDown)) {
+    player.play('idle', true)
+  } else {
+    player.play('walk', true)
+  }
+  if(this.cursors.right.isDown) player.x += speed
+
+  if(this.cursors.left.isDown) player.x -= speed
+  handleCloudOffscreen(cloudGroup.children.entries)
 }
 
 function create() {
-  this.add
-    .image(0, 0, "mountains")
-    .setOrigin(0, 0)
-    .setDisplaySize(height * 6, height)
-  this.add
-    .image(0, 0, "clouds-1")
-    .setOrigin(0, 0)
-    .setDisplaySize(height * 6, height);
-  this.add
-    .image(0, 0, "clouds-2")
-    .setOrigin(0, 0)
-    .setDisplaySize(height * 6, height);
-  this.add
-    .image(0, 0, "ground")
-    .setOrigin(0, 0)
-    .setDisplaySize(height * 6, height);
+  
+  createScrollingBg("mountains", 0.075);
+  createScrollingBg("ground", 0.8);
 
-  const player = this.add.sprite(height/3, height - height/6, 'player-idle')
-  player.displayWidth = (height/3);
+  player = this.add.sprite(viewHeight/3, viewHeight - viewHeight/6, 'player-idle')
+  player.displayWidth = (viewHeight/3);
   player.scaleY = player.scaleX;
+
+  createClouds(cloudCount);
 
   this.anims.create({
     key: 'walk',
@@ -73,5 +89,63 @@ function create() {
     frameRate: 1,
     repeat: -1
   })
-  player.play('idle');
+  this.cameras.main.setBounds(0, 0, sceneWidth, viewHeight)
+  this.cameras.main.startFollow(player)
+}
+
+const createScrollingBg = (texture, scrollFactor) => {
+  const count = Math.ceil(sceneWidth /viewHeight * 6) * scrollFactor
+  let x = 0;
+  for(let i = 0; i < count; i++) {
+    const bg = game.scene.scenes[0].add
+    .image(x, 0, texture)
+    .setOrigin(0, 0)
+    .setDisplaySize(viewHeight * 6, viewHeight)
+    .setScrollFactor(scrollFactor)
+
+    x += bg.width;
+  }
+
+}
+
+const createClouds = (count) => {
+  const scene = game.scene.scenes[0]
+  cloudGroup = scene.physics.add.group()
+  for (let i = 0; i < count; i++) {
+    const cloudId = Math.ceil(Math.random() * 15)
+    const minHeight = (viewHeight/6) -50;
+    const maxHeight = (viewHeight/6) +150
+    const height = Math.floor(Math.random() * maxHeight) +  minHeight
+    const width = Math.random() * sceneWidth
+    const scrollFactor = Math.floor(Math.random() * 0.9) + 0.1;
+    const velocity = Math.floor(Math.random() * -15) -2;
+
+    const cloud = cloudGroup.create(width, height, `cloud${cloudId}`)
+    .setScrollFactor(scrollFactor)
+    cloud.body.setVelocity(velocity, 0)
+
+  }
+}
+
+const createSingleCloud = () => {
+  const cloudId = Math.ceil(Math.random() * 15)
+    const minHeight = (viewHeight/6) -50;
+    const maxHeight = (viewHeight/6) +150
+    const height = Math.floor(Math.random() * maxHeight) +  minHeight
+    const width = sceneWidth + 50;
+    const scrollFactor = Math.floor(Math.random() * 0.9) + 0.1;
+    const velocity = Math.floor(Math.random() * -15) -2;
+
+    const cloud = cloudGroup.create(width, height, `cloud${cloudId}`)
+    .setScrollFactor(scrollFactor)
+    cloud.body.setVelocity(velocity, 0)
+}
+
+const handleCloudOffscreen = (clouds) => {
+  clouds.forEach(cloud => {
+    if (cloud.x < -50) {
+      cloud.destroy()
+      createSingleCloud()
+    }
+  });
 }
