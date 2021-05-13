@@ -18,6 +18,7 @@ body {
   text-align: center;
   max-width: 50%;
   padding: 1em;
+  line-height: 2em;
 }
 
 .main-content {
@@ -56,8 +57,13 @@ nav a {
 
 }
 
+.interactive-invitation-text {
+  font-size: 0.5em;
+  color:darkred
+}
+
 iframe {
-  width: 60vw;
-  height: 30vw;
+  width: 90vw;
+  height: 45vw;
   margin: 0px;
 }
