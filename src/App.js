@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 
 import Home from "./Home/Home";
+import Interactive from "./Interactive/Interactive";
 
 export default function App() {
   return (
@@ -40,8 +41,11 @@ export default function App() {
           <Route path="/users">
             <Users />
           </Route> */}
-          <Route path="/">
+          <Route exact path="/">
             <Home />
+          </Route>
+          <Route exact path="/interactive">
+            <Interactive />
           </Route>
         </Switch>
       </div>

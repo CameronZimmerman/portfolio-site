@@ -62,6 +62,11 @@ nav a {
   color:darkred
 }
 
+.interactive-portfolio-container {
+  height: 100%;
+  align-items: center;
+}
+
 iframe {
   width: 90vw;
   height: 45vw;
