@@ -17,7 +17,7 @@ let cameronHead
 let largeSignGroup
 let overlapTracker = 0
 
-const signObjectsArray = [{signText: 'Welcome', bigText: 'Thank you for taking the time to visit my portfolio.\n\r Maybe you\'re a fellow developer, recruiter, teacher, or hiring manager; regardless, it is my intention to open up a dialogue and generate discussion with you. I\'m inclined to not only show you what I have done, but learn and iterate based off of feedback.', xPos: 350}, {signText: 'About Me', bigText: 'I am an energetic and positive force for my next team. I love the human and explorative aspects of programming, and would classify my self as an intuitive learner; I\'m Failing and iterating always. It is my mission to bring the human and technological aspects of coding together.\n\r I have the ability to make or break someone\'s day, so I opt to bring my best day in and day out. In my free time I love to hike, go rock climbing, and do Parkour.', xPos: 700}, {signText: 'TechStack =>', bigText: 'Through trial and error, I have been able to gain experience in a variety of tools for Software Engineering', xPos: 850}]
+const signObjectsArray = [{signText: 'Welcome', bigText: 'Thank you for taking the time to visit my portfolio.\n\r Maybe you\'re a fellow developer, recruiter, teacher, or hiring manager; regardless, it is my intention to open up a dialogue and generate discussion with you. I\'m inclined to not only show you what I have done, but learn and iterate based off of feedback.', xPos: 350}, {signText: 'About Cameron', bigText: 'Cameron is an energetic and positive force for your next team. He loves the human and explorative aspects of programming, and would classify himself as an intuitive learner; He is failing and iterating always. It is his mission to bring the human and technological aspects of coding together.\n\r everyone has the ability to make or break someone\'s day, so cameron opts to bring his best self day in and day out. You can find Cameron hiking, climbing or doing Parkour in his freetime.', xPos: 700}, {signText: 'TechStack =>', bigText: 'Through trial and error, Cameron has been able to gain experience in a variety of tools for Software Engineering', xPos: 850}]
 
 
 const config = {
@@ -102,14 +102,21 @@ function preload() {
 
 function update() {
   const speed = 1.5 * sceneScale
+  if(this.cursors.right.isDown) {
+    player.x += speed
+    player.flipX = false;
+  }
+
+  if(this.cursors.left.isDown) {
+    player.x -= speed
+    player.flipX = true;
+  }
   if((this.cursors.right.isDown && this.cursors.left.isDown) || (!this.cursors.right.isDown && !this.cursors.left.isDown)) {
     player.play('idle', true)
+    player.flipX = false;
   } else {
     player.play('walk', true)
   }
-  if(this.cursors.right.isDown) player.x += speed
-
-  if(this.cursors.left.isDown) player.x -= speed
   handleCloudOffscreen(cloudGroup.children.entries)
 
   largeSignGroup.children.entries.forEach(sign => {
@@ -241,7 +248,7 @@ const createSigns = () => {
     sign.displayHeight = (signHeight);
     sign.scaleX = sign.scaleY;
 
-    scene.add.text(sign.x, sign.y, signObjectsArray[i].signText, {fontSize: `${viewHeight/20}px`, bold: true} )
+    scene.add.text(sign.x, sign.y, signObjectsArray[i].signText, {fontSize: `${viewHeight/32}px`, bold: true, backgroundColor: 'black'} )
       .setOrigin(0.5)
 
     const largeSignHeight = getScaledHeight("large-sign")
@@ -255,6 +262,7 @@ const createSigns = () => {
     largeSignContainer.add(largeSign)
     largeSignContainer.add(largeSignText)
     largeSignContainer.visible = false;
+    largeSignContainer.depth = 105;
 
     largeSignGroup.add(largeSignContainer)
 
