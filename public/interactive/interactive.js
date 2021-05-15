@@ -11,10 +11,13 @@ const cloudCount = 200;
 let player
 let cloudGroup
 let signGroup
+let techStackGroup
+let techCircle
+let cameronHead
 let largeSignGroup
-let overlapTracker = 0;
+let overlapTracker = 0
 
-const signObjectsArray = [{signText: 'Welcome', bigText: 'Thank you for taking the time to visit my portfolio.\n\r Maybe you\'re a fellow developer, recruiter, teacher, or hiring manager; regardless, it is my intention to open up a dialogue and generate discussion with you. I\'m inclined to not only show you what I have done, but learn and iterate based off of feedback.', xPos: 350}, {signText: 'About Me', bigText: 'I am an energetic and positive force for my next team. I love the human and explorative aspects of programming, and would classify my self as an intuitive learner; I\'m Failing and iterating always. It is my mission to bring the human and technological aspects of coding together.\n\r I have the ability to make or break someone\'s day, so I opt to bring my best day in and day out. In my free time I love to hike, go rock climbing, and do Parkour.', xPos: 700}]
+const signObjectsArray = [{signText: 'Welcome', bigText: 'Thank you for taking the time to visit my portfolio.\n\r Maybe you\'re a fellow developer, recruiter, teacher, or hiring manager; regardless, it is my intention to open up a dialogue and generate discussion with you. I\'m inclined to not only show you what I have done, but learn and iterate based off of feedback.', xPos: 350}, {signText: 'About Me', bigText: 'I am an energetic and positive force for my next team. I love the human and explorative aspects of programming, and would classify my self as an intuitive learner; I\'m Failing and iterating always. It is my mission to bring the human and technological aspects of coding together.\n\r I have the ability to make or break someone\'s day, so I opt to bring my best day in and day out. In my free time I love to hike, go rock climbing, and do Parkour.', xPos: 700}, {signText: 'TechStack =>', bigText: 'Through trial and error, I have been able to gain experience in a variety of tools for Software Engineering', xPos: 850}]
 
 
 const config = {
@@ -70,14 +73,20 @@ function preload() {
   this.load.image("mid-trees", "./media/portfolio-trees-2.png")
   this.load.image("close-trees", "./media/portfolio-trees-1.png")
   this.load.image("ground", "./media/portfolio-ground.png");
-
   this.load.image("sign", "./media/portfolio-sign.png")
-  this.load.image("large-sign", './media/portfolio-sign-large.png')
+  this.load.image("cameron-head", "./media/portfolio-cameron-head.png")
+  this.load.image("cameron-head-open", "./media/portfolio-cameron-head-open.png")
+  this.load.image("html5", "./media/portfolio-html5.png")
+  this.load.image("javascript", "./media/portfolio-javascript.png")
+  this.load.image("css", "./media/portfolio-css.png")
+  this.load.image("node", "./media/portfolio-node.png")
+  this.load.image("react", "./media/portfolio-react.png")
+  this.load.image("postgresql", "./media/portfolio-postgresql.png")
 
+  this.load.image("large-sign", './media/portfolio-sign-large.png')
   for (let i = 1; i < 16; i++) {
     this.load.image(`cloud${i}`, `./media/clouds/portfolio-cloud-${i}.png`)
   }
-
   this.load.spritesheet('player-walk', './media/portfolio-character-walk-spritesheet.png', {
     frameWidth: 32,
     frameHeight: 32
@@ -109,6 +118,12 @@ function update() {
     }
   })
   overlapTracker += overlapTracker > 100000? -overlapTracker : 1
+  for (let i = 0; i < techStackGroup.children.entries.length; i++) {
+    const child = techStackGroup.children.entries[i]
+    child.circlePos += 0.00025 * sceneScale
+    if (child.circlePos > 1) child.circlePos = 0
+    techCircle.getPoint(child.circlePos, child)
+  }
 }
 
 function create() {
@@ -123,7 +138,9 @@ function create() {
   player = this.physics.add.sprite(PLAYER_HEIGHT, viewHeight - viewHeight/6, "player-idle")
   player.displayWidth = (PLAYER_HEIGHT);
   player.scaleY = player.scaleX;
+  player.depth = 100
 
+  createCameronHead()
   createSigns()
 
   this.anims.create({
@@ -246,4 +263,39 @@ const createSigns = () => {
       largeSignContainer.visible = true;
     })
   }
+}
+
+const createCameronHead = () => {
+  const scene = game.scene.scenes[0]
+
+  const techHeight = getScaledHeight("html5")
+  techStackGroup = scene.add.group()
+  techStackGroup.create(1200, 0, "html5")
+  techStackGroup.create(1200, 0, "css")
+  techStackGroup.create(1200, 0, "react")
+  techStackGroup.create(1200, 0, "javascript")
+  techStackGroup.create(1200, 0, "postgresql")
+  techStackGroup.create(1200, 0, "node")
+  for (let i = 0; i < techStackGroup.children.entries.length; i++) {
+    const child = techStackGroup.children.entries[i]
+    child.displayWidth = techHeight
+    child.scaleY = child.scaleX
+    child.circlePos = (1 / techStackGroup.children.entries.length) * i 
+    child.visible = false
+  } 
+
+  techCircle = new Phaser.Geom.Circle(1200*sceneScale, viewHeight/2, 100 * sceneScale)
+  Phaser.Actions.PlaceOnCircle(techStackGroup.getChildren(), techCircle)
+
+  const cameronHeadHeight = getScaledHeight("cameron-head")
+  cameronHead = scene.physics.add.sprite(1200*sceneScale, viewHeight - (cameronHeadHeight * 0.5), "cameron-head")
+  cameronHead.displayWidth = cameronHeadHeight
+  cameronHead.scaleY = cameronHead.scaleX
+  scene.physics.add.overlap(player, cameronHead, (player, cameronHead) => {
+    cameronHead.setTexture("cameron-head-open")
+    techStackGroup.children.entries.forEach(child => {
+      child.visible = true
+    })
+  })
+
 }
