@@ -8,7 +8,7 @@ body {
   font-family: "Lato", sans-serif;
   font-size: 2vw;
   font-weight: normal;
-  color: white;
+  color: rgb(0, 0, 0);
   margin: 0px;
   padding: 0; 
 }
@@ -37,10 +37,10 @@ body {
 }
 #root {
   width: 80vw;
-  background-color: #228b22;
 }
 .name-heading {
   text-align: center;
+  color: rgb(0, 102, 14);
 }
 
 nav ul {

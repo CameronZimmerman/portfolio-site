@@ -1,13 +1,15 @@
-let viewWidth = window.innerWidth
-let viewHeight = window.innerHeight
-let sceneScale = viewHeight / 192
+let viewWidth = window.innerWidth;
+let viewHeight = window.innerHeight;
+let sceneScale = viewHeight / 192;
 
-let PLAYER_HEIGHT = viewHeight/3
-let playerScale = PLAYER_HEIGHT/32
-let sceneWidth = 10000 * sceneScale
+let PLAYER_HEIGHT = viewHeight / 3;
+let playerScale = PLAYER_HEIGHT / 32;
+let sceneWidth = 10000 * sceneScale;
 
 const cloudCount = 200;
 
+let scene
+let bgGroup
 let player
 let cloudGroup
 let signGroup
@@ -16,15 +18,41 @@ let techCircle
 let cameronHead
 let largeSignGroup
 let overlapTracker = 0
+let clearSkiesSign
+let nightTime = false
+let speed = 1.5 * sceneScale
 
-const signObjectsArray = [{signText: 'Welcome', bigText: 'Thank you for taking the time to visit my portfolio.\n\r Maybe you\'re a fellow developer, recruiter, teacher, or hiring manager; regardless, it is my intention to open up a dialogue and generate discussion with you. I\'m inclined to not only show you what I have done, but learn and iterate based off of feedback.', xPos: 350}, {signText: 'About Cameron', bigText: 'Cameron is an energetic and positive force for your next team. He loves the human and explorative aspects of programming, and would classify himself as an intuitive learner; He is failing and iterating always. It is his mission to bring the human and technological aspects of coding together.\n\r everyone has the ability to make or break someone\'s day, so cameron opts to bring his best self day in and day out. You can find Cameron hiking, climbing or doing Parkour in his freetime.', xPos: 700}, {signText: 'TechStack =>', bigText: 'Through trial and error, Cameron has been able to gain experience in a variety of tools for Software Engineering', xPos: 850}]
-
+const signObjectsArray = [
+  {
+    signText: "Welcome",
+    bigText:
+      "Thank you for taking the time to visit my portfolio.\n\r Maybe you're a fellow developer, recruiter, teacher, or hiring manager; regardless, it is my intention to open up a dialogue and generate discussion with you. I'm inclined to not only show you what I have done, but learn and iterate based off of feedback.",
+    xPos: 350,
+  },
+  {
+    signText: "About Cameron",
+    bigText:
+      "Cameron is an energetic and positive force for your next team. He loves the human and explorative aspects of programming, and would classify himself as an intuitive learner; He is failing and iterating always. It is his mission to bring the human and technological aspects of coding together.\n\r everyone has the ability to make or break someone's day, so cameron opts to bring his best self day in and day out. You can find Cameron hiking, climbing or doing Parkour in his freetime.",
+    xPos: 700,
+  },
+  {
+    signText: "TechStack =>",
+    bigText:
+      "Through trial and error, Cameron has been able to gain experience in a variety of tools for Software Engineering",
+    xPos: 850,
+  },
+  {
+    signText: "Projects =>",
+    bigText:
+      "Working in a team is one of the most fulfilling aspects of Software Development for Cameron.",
+    xPos: 1500,
+  },
+];
 
 const config = {
-  type: Phaser.CANVAS,
+  type: Phaser.WEBGL,
   width: viewWidth,
   height: viewHeight,
-  zoom: 4,
   antialias: false,
   pixleArt: true,
   physics: {
@@ -36,95 +64,106 @@ const config = {
   scene: {
     preload: preload,
     create: create,
-    update: update
+    update: update,
   },
 };
 
-const game = new Phaser.Game(config)
+const game = new Phaser.Game(config);
 
-window.addEventListener('resize', () => {
-  console.log('resized')
-  const canvas = document.querySelector('canvas')
-  console.log(canvas)
+window.addEventListener("resize", () => {
+  const canvas = document.querySelector("canvas");
 
-  viewWidth = window.innerWidth
-  viewHeight = window.innerHeight
-  const windowRatio = viewWidth/viewHeight
-  const gameRatio = game.config.width/game.config.height
-  PLAYER_HEIGHT = viewHeight/3
-  playerScale = PLAYER_HEIGHT/32
-  sceneWidth = 10000 * sceneScale
+  viewWidth = window.innerWidth;
+  viewHeight = window.innerHeight;
+  sceneScale = viewHeight / 192; 
+  const windowRatio = viewWidth / viewHeight;
+  const gameRatio = game.config.width / game.config.height;
+  PLAYER_HEIGHT = viewHeight / 3;
+  playerScale = PLAYER_HEIGHT / 32;
+  sceneWidth = 10000 * sceneScale;
 
-  if(windowRatio < gameRatio){
+  if (windowRatio < gameRatio) {
     canvas.style.width = viewWidth + "px";
-    canvas.style.height = (viewWidth / gameRatio) + "px";
-}
-else {
-    canvas.style.width = (viewHeight * gameRatio) + "px";
+    canvas.style.height = viewWidth / gameRatio + "px";
+  } else {
+    canvas.style.width = viewHeight * gameRatio + "px";
     canvas.style.height = viewHeight + "px";
-}
-})
+  }
+});
 
 function preload() {
-  this.load.setBaseURL("");
+  scene = game.scene.scenes[0];
+  scene.load.setBaseURL("");
 
-  this.load.image("mountains", "./media/portfolio-mountains.png");
-  this.load.image("far-trees", "./media/portfolio-trees-3.png")
-  this.load.image("mid-trees", "./media/portfolio-trees-2.png")
-  this.load.image("close-trees", "./media/portfolio-trees-1.png")
-  this.load.image("ground", "./media/portfolio-ground.png");
-  this.load.image("sign", "./media/portfolio-sign.png")
-  this.load.image("cameron-head", "./media/portfolio-cameron-head.png")
-  this.load.image("cameron-head-open", "./media/portfolio-cameron-head-open.png")
-  this.load.image("html5", "./media/portfolio-html5.png")
-  this.load.image("javascript", "./media/portfolio-javascript.png")
-  this.load.image("css", "./media/portfolio-css.png")
-  this.load.image("node", "./media/portfolio-node.png")
-  this.load.image("react", "./media/portfolio-react.png")
-  this.load.image("postgresql", "./media/portfolio-postgresql.png")
-
-  this.load.image("large-sign", './media/portfolio-sign-large.png')
+  scene.load.image("mountains", "./media/portfolio-mountains.png");
+  scene.load.image("stars", "./media/portfolio-stars.png");
+  scene.load.image("far-trees", "./media/portfolio-trees-3.png");
+  scene.load.image("mid-trees", "./media/portfolio-trees-2.png");
+  scene.load.image("close-trees", "./media/portfolio-trees-1.png");
+  scene.load.image("ground", "./media/portfolio-ground.png");
+  scene.load.image("sign", "./media/portfolio-sign.png");
+  scene.load.image("cameron-head", "./media/portfolio-cameron-head.png");
+  scene.load.image("cameron-head-open","./media/portfolio-cameron-head-open.png");
+  scene.load.image("html5", "./media/portfolio-html5.png");
+  scene.load.image("javascript", "./media/portfolio-javascript.png");
+  scene.load.image("css", "./media/portfolio-css.png");
+  scene.load.image("node", "./media/portfolio-node.png");
+  scene.load.image("react", "./media/portfolio-react.png");
+  scene.load.image("postgresql", "./media/portfolio-postgresql.png");
+  scene.load.image("clear-skies-sign", "./media/portfolio-clearskies-sign.png");
+  scene.load.image("telescope", "./media/portfolio-telescope.png")
+  scene.load.image("stargazing", "./media/portfolio-stargazing.png")
+  scene.load.image("large-sign", "./media/portfolio-sign-large.png");
   for (let i = 1; i < 16; i++) {
-    this.load.image(`cloud${i}`, `./media/clouds/portfolio-cloud-${i}.png`)
+    scene.load.image(`cloud${i}`, `./media/clouds/portfolio-cloud-${i}.png`);
   }
-  this.load.spritesheet('player-walk', './media/portfolio-character-walk-spritesheet.png', {
-    frameWidth: 32,
-    frameHeight: 32
-  })
-  this.load.spritesheet('player-idle', './media/portfolio-character-idle-spritesheet.png', {
-    frameWidth: 32,
-    frameHeight: 32
-  })
+  scene.load.spritesheet(
+    "player-walk",
+    "./media/portfolio-character-walk-spritesheet.png",
+    {
+      frameWidth: 32,
+      frameHeight: 32,
+    }
+  )
+  scene.load.spritesheet(
+    "player-idle",
+    "./media/portfolio-character-idle-spritesheet.png",
+    {
+      frameWidth: 32,
+      frameHeight: 32,
+    }
+  )
 
-  this.cursors = this.input.keyboard.createCursorKeys()
-  console.log(this.textures.get('ground').getSourceImage().height)
+  scene.cursors = scene.input.keyboard.createCursorKeys()
 }
 
 function update() {
-  const speed = 1.5 * sceneScale
-  if(this.cursors.right.isDown) {
-    player.x += speed
-    player.flipX = false;
+  if (scene.cursors.right.isDown) {
+    moveBySpeed(player, 1)
+    player.flipX = false
   }
 
-  if(this.cursors.left.isDown) {
-    player.x -= speed
-    player.flipX = true;
+  if (scene.cursors.left.isDown) {
+    moveBySpeed(player, -1)
+    player.flipX = true
   }
-  if((this.cursors.right.isDown && this.cursors.left.isDown) || (!this.cursors.right.isDown && !this.cursors.left.isDown)) {
-    player.play('idle', true)
-    player.flipX = false;
+  if (
+    (scene.cursors.right.isDown && scene.cursors.left.isDown) ||
+    (!scene.cursors.right.isDown && !scene.cursors.left.isDown)
+  ) {
+    player.play("idle", true)
+    player.flipX = false
   } else {
-    player.play('walk', true)
+    player.play("walk", true)
   }
   handleCloudOffscreen(cloudGroup.children.entries)
 
-  largeSignGroup.children.entries.forEach(sign => {
+  largeSignGroup.children.entries.forEach((sign) => {
     if (sign.overlapTime && sign.overlapTime < overlapTracker) {
-      sign.visible = false;
+      sign.visible = false
     }
   })
-  overlapTracker += overlapTracker > 100000? -overlapTracker : 1
+  overlapTracker += overlapTracker > 100000 ? -overlapTracker : 1
   for (let i = 0; i < techStackGroup.children.entries.length; i++) {
     const child = techStackGroup.children.entries[i]
     child.circlePos += 0.00025 * sceneScale
@@ -134,176 +173,279 @@ function update() {
 }
 
 function create() {
-  
-  createScrollingBg("mountains", 0.075);
-  createClouds(cloudCount);
-  createScrollingBg("far-trees", 0.2);
-  createScrollingBg("mid-trees", 0.4);
-  createScrollingBg("close-trees", 0.6);
-  createScrollingBg("ground", 0.8);
+  bgGroup = createScrollingBg("mountains", 0.075)
+  createClouds(cloudCount)
+  createScrollingBg("far-trees", 0.2)
+  createScrollingBg("mid-trees", 0.4)
+  createScrollingBg("close-trees", 0.6)
+  createScrollingBg("ground", 0.8)
 
-  player = this.physics.add.sprite(PLAYER_HEIGHT, viewHeight - viewHeight/6, "player-idle")
-  player.displayWidth = (PLAYER_HEIGHT);
-  player.scaleY = player.scaleX;
+  player = scene.physics.add.sprite(
+    PLAYER_HEIGHT,
+    viewHeight - viewHeight / 6,
+    "player-idle"
+  )
+  player.displayWidth = PLAYER_HEIGHT
+  player.scaleY = player.scaleX
   player.depth = 100
 
   createCameronHead()
   createSigns()
+  createClearSkiesSign()
+  createTelescope()
 
-  this.anims.create({
+  scene.anims.create({
     key: "walk",
-    frames: this.anims.generateFrameNumbers("player-walk", {frames: [1, 2, 3, 4, 5, 6]}),
+    frames: scene.anims.generateFrameNumbers("player-walk", {
+      frames: [1, 2, 3, 4, 5, 6],
+    }),
     frameRate: 10,
-    repeat: -1
+    repeat: -1,
   })
 
-  this.anims.create({
+  scene.anims.create({
     key: "idle",
-    frames: this.anims.generateFrameNumbers("player-idle", {frames: [1, 2, 3, 4, 5, 6]}),
+    frames: scene.anims.generateFrameNumbers("player-idle", {
+      frames: [1, 2, 3, 4, 5, 6],
+    }),
     frameRate: 1,
-    repeat: -1
+    repeat: -1,
   })
 
-  this.cameras.main.setBounds(0, 0, sceneWidth, viewHeight)
-  this.cameras.main.startFollow(player)
+  scene.cameras.main.setBounds(0, 0, sceneWidth, viewHeight)
+  scene.cameras.main.startFollow(player)
 }
 
 const getScaledHeight = (texture) => {
-  const scene = game.scene.scenes[0];
-  return scene.textures.get(texture).getSourceImage().height * playerScale
-}
+  return scene.textures.get(texture).getSourceImage().height * playerScale;
+};
 
 const createScrollingBg = (texture, scrollFactor) => {
-  const count = Math.ceil(sceneWidth /viewHeight * 6) * scrollFactor
+
+  const count = Math.ceil((sceneWidth / viewHeight) * 6) * scrollFactor;
+  const bgGroup = scene.add.group();
+
   let x = 0;
-  for(let i = 0; i < count; i++) {
-    const bg = game.scene.scenes[0].add
-    .image(x, 0, texture)
-    .setOrigin(0, 0)
-    .setDisplaySize(viewHeight * 6, viewHeight)
-    .setScrollFactor(scrollFactor)
+  for (let i = 0; i < count; i++) {
+    const bg = bgGroup
+      .create(x, 0, texture)
+      .setOrigin(0, 0)
+      .setDisplaySize(viewHeight * 6, viewHeight)
+      .setScrollFactor(scrollFactor);
 
     x += bg.width * sceneScale;
   }
 
-}
+  return bgGroup;
+};
 
 const createClouds = (count) => {
-  const scene = game.scene.scenes[0]
   const CLOUD_SCALING = 0.5;
-  cloudGroup = scene.physics.add.group()
+  cloudGroup = scene.physics.add.group();
   for (let i = 0; i < count; i++) {
-    const cloudId = Math.ceil(Math.random() * 15)
+    const cloudId = Math.ceil(Math.random() * 15);
 
-    const displayWidth = scene.textures.get(`cloud${cloudId}`).getSourceImage().width * sceneScale * CLOUD_SCALING;
-    const displayHeight = scene.textures.get(`cloud${cloudId}`).getSourceImage().height * sceneScale * CLOUD_SCALING;
+    const displayWidth =
+      scene.textures.get(`cloud${cloudId}`).getSourceImage().width *
+      sceneScale *
+      CLOUD_SCALING;
+    const displayHeight =
+      scene.textures.get(`cloud${cloudId}`).getSourceImage().height *
+      sceneScale *
+      CLOUD_SCALING;
 
-    const minHeight = (viewHeight/6) -50;
-    const maxHeight = (viewHeight/6) +150
-    const height = Math.floor(Math.random() * maxHeight) +  minHeight
-    const width = Math.random() * sceneWidth
+    const minHeight = viewHeight / 6 - 50;
+    const maxHeight = viewHeight / 6 + 150;
+    const height = Math.floor(Math.random() * maxHeight) + minHeight;
+    const width = Math.random() * sceneWidth;
     const scrollFactor = Math.floor(Math.random() * 0.9) + 0.1;
-    const velocity = Math.floor(Math.random() * -15) -2;
+    const velocity = Math.floor(Math.random() * -15) - 2;
 
-    const cloud = cloudGroup.create(width, height, `cloud${cloudId}`)
-    .setScrollFactor(scrollFactor)
-    .setDisplaySize(displayWidth, displayHeight)
-    cloud.body.setVelocity(velocity, 0)
-
+    const cloud = cloudGroup
+      .create(width, height, `cloud${cloudId}`)
+      .setScrollFactor(scrollFactor)
+      .setDisplaySize(displayWidth, displayHeight);
+    cloud.body.setVelocity(velocity, 0);
   }
-}
+};
 
 const createSingleCloud = () => {
-  const cloudId = Math.ceil(Math.random() * 15)
-    const minHeight = (viewHeight/6) -50;
-    const maxHeight = (viewHeight/6) +150
-    const height = Math.floor(Math.random() * maxHeight) +  minHeight
-    const width = sceneWidth + 50;
-    const scrollFactor = Math.floor(Math.random() * 0.9) + 0.1;
-    const velocity = Math.floor(Math.random() * -15) -2;
+  const cloudId = Math.ceil(Math.random() * 15);
+  const minHeight = viewHeight / 6 - 50;
+  const maxHeight = viewHeight / 6 + 150;
+  const height = Math.floor(Math.random() * maxHeight) + minHeight;
+  const width = sceneWidth + 50;
+  const scrollFactor = Math.floor(Math.random() * 0.9) + 0.1;
+  const velocity = Math.floor(Math.random() * -15) - 2;
 
-    const cloud = cloudGroup.create(width, height, `cloud${cloudId}`)
-    .setScrollFactor(scrollFactor)
-    cloud.body.setVelocity(velocity, 0)
-}
+  const cloud = cloudGroup
+    .create(width, height, `cloud${cloudId}`)
+    .setScrollFactor(scrollFactor);
+  cloud.body.setVelocity(velocity, 0);
+};
 
 const handleCloudOffscreen = (clouds) => {
-  clouds.forEach(cloud => {
+  clouds.forEach((cloud) => {
     if (cloud.x < -50) {
-      cloud.destroy()
-      createSingleCloud()
+      cloud.destroy();
+      createSingleCloud();
     }
   });
-}
+};
 
 const createSigns = () => {
-  const scene = game.scene.scenes[0]
-  signGroup = scene.physics.add.group()
-  largeSignGroup = scene.add.group()
+  signGroup = scene.physics.add.group();
+  largeSignGroup = scene.add.group();
 
-
-  for(let i = 0; i < signObjectsArray.length; i ++) {
+  for (let i = 0; i < signObjectsArray.length; i++) {
     const signHeight = getScaledHeight("sign");
-    const sign = signGroup.create(signObjectsArray[i].xPos * sceneScale , viewHeight - signHeight * 0.5, "sign")
-    sign.displayHeight = (signHeight);
+    const sign = signGroup.create(
+      signObjectsArray[i].xPos * sceneScale,
+      viewHeight - signHeight * 0.5,
+      "sign"
+    );
+    sign.displayHeight = signHeight;
     sign.scaleX = sign.scaleY;
 
-    scene.add.text(sign.x, sign.y, signObjectsArray[i].signText, {fontSize: `${viewHeight/32}px`, bold: true, backgroundColor: 'black'} )
-      .setOrigin(0.5)
-
-    const largeSignHeight = getScaledHeight("large-sign")
-    const largeSign = scene.add.image(0, 0, "large-sign")
-    largeSign.displayHeight = (largeSignHeight);
-    largeSign.scaleX = sign.scaleY;
-    const largeSignText = scene.add.text(0, 0, signObjectsArray[i].bigText, {wordWrap: {width: largeSign.displayWidth * 0.9}, fontSize: `${viewHeight/25}px`} )
+    scene.add
+      .text(sign.x, sign.y, signObjectsArray[i].signText, {
+        fontSize: `${viewHeight / 32}px`,
+        bold: true,
+        backgroundColor: "black",
+      })
       .setOrigin(0.5);
 
-    const largeSignContainer = scene.add.container(sign.x, viewHeight/2)
-    largeSignContainer.add(largeSign)
-    largeSignContainer.add(largeSignText)
+    const largeSignHeight = getScaledHeight("large-sign");
+    const largeSign = scene.add.image(0, 0, "large-sign");
+    largeSign.displayHeight = largeSignHeight;
+    largeSign.scaleX = sign.scaleY;
+    const largeSignText = scene.add
+      .text(0, 0, signObjectsArray[i].bigText, {
+        wordWrap: { width: largeSign.displayWidth * 0.9 },
+        fontSize: `${viewHeight / 25}px`,
+      })
+      .setOrigin(0.5);
+
+    const largeSignContainer = scene.add.container(sign.x, viewHeight / 2);
+    largeSignContainer.add(largeSign);
+    largeSignContainer.add(largeSignText);
     largeSignContainer.visible = false;
     largeSignContainer.depth = 105;
 
-    largeSignGroup.add(largeSignContainer)
+    largeSignGroup.add(largeSignContainer);
 
     scene.physics.add.overlap(player, sign, (player, sign) => {
       largeSignContainer.overlapTime = overlapTracker;
       largeSignContainer.visible = true;
-    })
+    });
   }
-}
+};
+
+const createScaledPhysicsObj = (height, xPos, texture) => {
+  const obj = scene.physics.add.sprite(
+    xPos * sceneScale,
+    viewHeight - height * 0.5,
+    texture
+  );
+  obj.displayWidth = height;
+  obj.scaleY = obj.scaleX;
+
+  return obj;
+};
 
 const createCameronHead = () => {
-  const scene = game.scene.scenes[0]
 
-  const techHeight = getScaledHeight("html5")
-  techStackGroup = scene.add.group()
-  techStackGroup.create(1200, 0, "html5")
-  techStackGroup.create(1200, 0, "css")
-  techStackGroup.create(1200, 0, "react")
-  techStackGroup.create(1200, 0, "javascript")
-  techStackGroup.create(1200, 0, "postgresql")
-  techStackGroup.create(1200, 0, "node")
+  const techHeight = getScaledHeight("html5");
+  techStackGroup = scene.add.group();
+  techStackGroup.create(1200, 0, "html5");
+  techStackGroup.create(1200, 0, "css");
+  techStackGroup.create(1200, 0, "react");
+  techStackGroup.create(1200, 0, "javascript");
+  techStackGroup.create(1200, 0, "postgresql");
+  techStackGroup.create(1200, 0, "node");
   for (let i = 0; i < techStackGroup.children.entries.length; i++) {
-    const child = techStackGroup.children.entries[i]
-    child.displayWidth = techHeight
-    child.scaleY = child.scaleX
-    child.circlePos = (1 / techStackGroup.children.entries.length) * i 
-    child.visible = false
-  } 
+    const child = techStackGroup.children.entries[i];
+    child.displayWidth = techHeight;
+    child.scaleY = child.scaleX;
+    child.circlePos = (1 / techStackGroup.children.entries.length) * i;
+    child.visible = false;
+  }
 
-  techCircle = new Phaser.Geom.Circle(1200*sceneScale, viewHeight/2, 100 * sceneScale)
-  Phaser.Actions.PlaceOnCircle(techStackGroup.getChildren(), techCircle)
+  techCircle = new Phaser.Geom.Circle(
+    1200 * sceneScale,
+    viewHeight / 2,
+    100 * sceneScale
+  );
+  Phaser.Actions.PlaceOnCircle(techStackGroup.getChildren(), techCircle);
 
-  const cameronHeadHeight = getScaledHeight("cameron-head")
-  cameronHead = scene.physics.add.sprite(1200*sceneScale, viewHeight - (cameronHeadHeight * 0.5), "cameron-head")
-  cameronHead.displayWidth = cameronHeadHeight
-  cameronHead.scaleY = cameronHead.scaleX
+  const cameronHeadHeight = getScaledHeight("cameron-head");
+  cameronHead = createScaledPhysicsObj(cameronHeadHeight, 1200, "cameron-head");
   scene.physics.add.overlap(player, cameronHead, (player, cameronHead) => {
-    cameronHead.setTexture("cameron-head-open")
-    techStackGroup.children.entries.forEach(child => {
-      child.visible = true
-    })
-  })
+    cameronHead.setTexture("cameron-head-open");
+    techStackGroup.children.entries.forEach((child) => {
+      child.visible = true;
+    });
+  });
+};
 
+const createClearSkiesSign = () => {
+  scene.cameras.main.once("camerafadeincomplete", function (camera) {
+      camera.fadeEffect.alpha = 0.25
+  });
+  const height = getScaledHeight("clear-skies-sign");
+  clearSkiesSign = createScaledPhysicsObj(height, 1800, "clear-skies-sign");
+  scene.physics.add.overlap(
+    player,
+    clearSkiesSign,
+    (player, clearSkiesSign) => {
+      if (player.x > clearSkiesSign.x && !nightTime) {
+        scene.cameras.main.fadeOut(1500);
+        scene.cameras.main.once("camerafadeoutcomplete", function (camera) {
+          camera.fadeIn(1500);
+          if(!nightTime){
+            cloudGroup.getChildren().forEach((child) => {
+              child.setVisible(false)
+            })
+          
+            bgGroup.getChildren().forEach((child) => {
+              child.setTexture("stars");
+            });
+            
+            nightTime = true
+          }
+        });
+      } else if(!scene.cameras.main.fadeEffect.isComplete) {
+        scene.cameras.main.resetFX();
+      }
+    }
+  );
+};
+
+const createTelescope = () => {
+  const height = getScaledHeight("telescope")
+  const telescope = createScaledPhysicsObj(height, 2300, "telescope")
+  const image = scene.add.image(telescope.x, 0, "stargazing")
+    .setOrigin(0.5, 0)
+  image.displayHeight = viewHeight
+  image.scaleX = image.scaleY
+  const graphics = scene.make.graphics()
+  graphics.fillStyle(0xffffff)
+  const circleRadius = 50*sceneScale
+  const circle = new Phaser.Geom.Circle(telescope.x, scene.input.mousePointer.worldY, circleRadius)
+  graphics.fillCircleShape(circle)
+  
+  const mask = graphics.createGeometryMask()
+
+  image.setMask(mask)
+ 
+  scene.physics.add.overlap(player, telescope, (player, telescope) => {
+
+    graphics.setX(scene.input.x - (0.5*viewWidth) - (circleRadius))
+    graphics.setY(scene.input.y)
+
+  })
+}
+
+const moveBySpeed = (obj, dir) => {
+  obj.x += speed *dir
 }
