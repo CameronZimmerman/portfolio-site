@@ -616,7 +616,6 @@ const createLargeCharacters = (text, baseX, baseY) => {
       wordWrap: { width: 100},
       fontSize: `${viewHeight / 10}px`,
       lineSpacing: 0,
-      baselineY: 0
     })
     word.depth = 1
     scene.physics.world.enable(word)
