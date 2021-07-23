@@ -17,7 +17,6 @@ body {
   margin-right: auto;
   text-align: center;
   max-width: 50%;
-  padding: 1em;
 }
 
 .main-content {
@@ -40,25 +39,6 @@ body {
 .name-heading {
   text-align: center;
   color: rgb(0, 102, 14);
-}
-
-nav ul {
-  list-style-type: none;
-  display: flex;
-  justify-content: center;
-  width: 75%;
-}
-
-nav a {
-  margin: 0.75em;
-  text-decoration: none;
-  color: rgb(0, 34, 0)
-
-}
-
-.interactive-invitation-text {
-  font-size: 0.5em;
-  color:darkred
 }
 
 .interactive-portfolio-container {

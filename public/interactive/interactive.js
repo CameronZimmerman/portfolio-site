@@ -413,14 +413,13 @@ const createSigns = () => {
     )
     sign.displayHeight = signHeight
     sign.scaleX = sign.scaleY
-
+    
     scene.add
       .text(sign.x, sign.y, signObjectsArray[i].signText, {
         fontSize: `${viewHeight / 32}px`,
         bold: true,
         backgroundColor: "black",
         lineSpacing: 0,
-        baselineY: 0
       })
       .setOrigin(0.5)
 
@@ -433,7 +432,6 @@ const createSigns = () => {
         wordWrap: { width: largeSign.displayWidth * 0.9 },
         fontSize: `${viewHeight / 25}px`,
         lineSpacing: 0,
-        baselineY: 0
 
       })
       .setOrigin(0.5)
