@@ -71,7 +71,7 @@ const signObjectsArray = [
 ]
 
 const config = {
-  type: Phaser.WEBGL,
+  type: Phaser.CANVAS,
   width: viewWidth,
   height: viewHeight,
   antialias: false,
@@ -419,7 +419,7 @@ const createSigns = () => {
         fontSize: `${viewHeight / 32}px`,
         bold: true,
         backgroundColor: "black",
-        lineSpacing: -20
+        lineSpacing: 0
       })
       .setOrigin(0.5)
 
@@ -431,7 +431,7 @@ const createSigns = () => {
       .text(0, 0, signObjectsArray[i].bigText, {
         wordWrap: { width: largeSign.displayWidth * 0.9 },
         fontSize: `${viewHeight / 25}px`,
-        lineSpacing: -20
+        lineSpacing: 0
       })
       .setOrigin(0.5)
 
@@ -567,7 +567,7 @@ const createFloatingImageWithText = (description, texture, x, y) => {
     backgroundColor: "black",
     wordWrap: { width: image.displayWidth * 0.9 },
     boundsAlignW: "center",
-    lineSpacing: -20
+    lineSpacing: 0
 
   })
   text.setOrigin(0.5)
@@ -613,7 +613,7 @@ const createLargeCharacters = (text, baseX, baseY) => {
     const word = scene.add.text(baseX, baseY, words[currentWord], {
       wordWrap: { width: 100},
       fontSize: `${viewHeight / 10}px`,
-      lineSpacing: -20
+      lineSpacing: 0
     })
     word.depth = 1
     scene.physics.world.enable(word)
