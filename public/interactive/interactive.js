@@ -419,7 +419,7 @@ const createSigns = () => {
         fontSize: `${viewHeight / 32}px`,
         bold: true,
         backgroundColor: "black",
-        lineHeight: 5
+        lineSpacing: 5
       })
       .setOrigin(0.5)
 
@@ -431,7 +431,7 @@ const createSigns = () => {
       .text(0, 0, signObjectsArray[i].bigText, {
         wordWrap: { width: largeSign.displayWidth * 0.9 },
         fontSize: `${viewHeight / 25}px`,
-        lineHeight: 5
+        lineSpacing: 5
       })
       .setOrigin(0.5)
 
@@ -567,7 +567,7 @@ const createFloatingImageWithText = (description, texture, x, y) => {
     backgroundColor: "black",
     wordWrap: { width: image.displayWidth * 0.9 },
     boundsAlignW: "center",
-    lineHeight: 5
+    lineSpacing: 5
 
   })
   text.setOrigin(0.5)
@@ -613,7 +613,7 @@ const createLargeCharacters = (text, baseX, baseY) => {
     const word = scene.add.text(baseX, baseY, words[currentWord], {
       wordWrap: { width: 100},
       fontSize: `${viewHeight / 10}px`,
-      lineHeight: 5
+      lineSpacing: 5
     })
     word.depth = 1
     scene.physics.world.enable(word)
